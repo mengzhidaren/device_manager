@@ -1,5 +1,5 @@
 name: device_manager
-description: Device manager project for Windows desktop.
+description: Manager for hardware devices(USB, Serial. etc...) for Flutter Win32 Desktop applications.
 version: 0.0.1
 repository: https://github.com/bojidartonchev/device_manager
 
