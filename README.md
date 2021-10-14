@@ -1,15 +1,23 @@
-# device_manager
+# Device Manager for Flutter
 
-A new flutter plugin project.
+`device_manager` is a simple transmitter for the [`WM_DEVICECHANGE`](https://docs.microsoft.com/en-us/windows/win32/devio/wm-devicechange) message.
+In other words, your Flutter Win32 App will be notified anytime there is a new hardware device connected to the computer.
 
-## Getting Started
+Supported platforms:
+- Windows
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+## Usage
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+To use this package, add `device_manager` as a [dependency in your pubspec.yaml file](https://dart.dev/tools/pub/dependencies).
 
+Now go to `lib\main.dart` and add this code in the `main` function right after `runApp(MyApp());` :
+
+```dart
+DeviceManager().addListener(() {
+  scaffoldKey.currentState!.showSnackBar(const SnackBar(content: Text('New device detected!')));
+});
+```
+
+This listener will be called anytime a device had been connected.
+
+You can find examples in the `example` folder.
