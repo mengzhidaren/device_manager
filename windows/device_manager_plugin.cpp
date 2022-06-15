@@ -72,8 +72,11 @@ void DeviceManagerPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
 
-  if (method_call.method_name().compare("getDevicesCount") == 0) {
-    result->Success(flutter::EncodableValue(50));
+  if (method_call.method_name().compare("get_devices_count") == 0) {
+    UINT32 nDevices = 0;
+    GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST));
+
+    result->Success(flutter::EncodableValue((int)nDevices));
   } else {
     result->NotImplemented();
   }
@@ -85,6 +88,19 @@ std::optional<LRESULT> DeviceManagerPlugin::HandleWindowProc(HWND hwnd,
                                                           LPARAM lparam) {
   std::optional<LRESULT> result;
   switch (message) {
+    case WM_ACTIVATE:
+      {
+        DEV_BROADCAST_DEVICEINTERFACE notificationFilter;
+        notificationFilter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
+        notificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+
+        RegisterDeviceNotification(
+            hwnd,
+            &notificationFilter,
+            DEVICE_NOTIFY_ALL_INTERFACE_CLASSES
+        );
+      }
+      break;
     case WM_DEVICECHANGE:
       {
         if(wparam == DBT_DEVICEARRIVAL)
@@ -93,6 +109,13 @@ std::optional<LRESULT> DeviceManagerPlugin::HandleWindowProc(HWND hwnd,
           int deviceType = (int)(pHdr->dbch_devicetype);
           const flutter::EncodableValue argument = flutter::EncodableValue(deviceType);
           m_channel->InvokeMethod("device_added", std::make_unique<flutter::EncodableValue>(argument), nullptr);
+        }
+        else if(wparam == DBT_DEVICEREMOVECOMPLETE)
+        {
+          PDEV_BROADCAST_HDR pHdr = (PDEV_BROADCAST_HDR)lparam;
+          int deviceType = (int)(pHdr->dbch_devicetype);
+          const flutter::EncodableValue argument = flutter::EncodableValue(deviceType);
+          m_channel->InvokeMethod("device_removed", std::make_unique<flutter::EncodableValue>(argument), nullptr);
         }
       }
       break;

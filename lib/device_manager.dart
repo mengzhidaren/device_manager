@@ -29,6 +29,14 @@ class DeviceManager with ChangeNotifier {
             }
             break;
           }
+        case "device_removed":
+          {
+            int deviceType = call.arguments;
+            if (deviceType == port) {
+              notifyListeners();
+            }
+            break;
+          }
       }
 
       return Future.value(0);
@@ -36,7 +44,7 @@ class DeviceManager with ChangeNotifier {
   }
 
   Future<int?> get devicesCount async {
-    final int? count = await _channel.invokeMethod('getDevicesCount');
+    final int? count = await _channel.invokeMethod('get_devices_count');
     return count;
   }
 }
