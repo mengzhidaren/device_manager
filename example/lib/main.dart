@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:device_manager/device_event.dart';
 import 'package:device_manager/device_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,8 +28,19 @@ class _MyAppState extends State<MyApp> {
     initDevicesCount();
 
     DeviceManager().addListener(() {
-      scaffoldKey.currentState!
-          .showSnackBar(const SnackBar(content: Text('New device detected!')));
+      var event = DeviceManager().lastEvent;
+      if (event != null) {
+        if (event.eventType == EventType.add) {
+          scaffoldKey.currentState!.showSnackBar(
+              const SnackBar(content: Text('New device detected!')));
+        } else if (event.eventType == EventType.remove) {
+          scaffoldKey.currentState!
+              .showSnackBar(const SnackBar(content: Text('Device removed!')));
+        }
+
+        //Refresh count
+        initDevicesCount();
+      }
     });
   }
 

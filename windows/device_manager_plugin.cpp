@@ -38,6 +38,7 @@ class DeviceManagerPlugin : public flutter::Plugin {
 
   // The ID of the WindowProc delegate registration.
   int m_windowProcId = -1;
+  bool m_registered = false;
 };
 
 // static
@@ -90,15 +91,21 @@ std::optional<LRESULT> DeviceManagerPlugin::HandleWindowProc(HWND hwnd,
   switch (message) {
     case WM_ACTIVATE:
       {
-        DEV_BROADCAST_DEVICEINTERFACE notificationFilter;
-        notificationFilter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
-        notificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+        if(!m_registered)
+        {
+          m_registered = true;
 
-        RegisterDeviceNotification(
-            hwnd,
-            &notificationFilter,
-            DEVICE_NOTIFY_ALL_INTERFACE_CLASSES
-        );
+          DEV_BROADCAST_DEVICEINTERFACE notificationFilter;
+          ZeroMemory(&notificationFilter, sizeof(notificationFilter));
+          notificationFilter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
+          notificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+
+          RegisterDeviceNotification(
+              hwnd,
+              &notificationFilter,
+              DEVICE_NOTIFY_ALL_INTERFACE_CLASSES
+          );
+        }
       }
       break;
     case WM_DEVICECHANGE:

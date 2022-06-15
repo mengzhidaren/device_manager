@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:device_manager/device_event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
@@ -18,21 +19,28 @@ class DeviceManager with ChangeNotifier {
     return _singleton;
   }
 
+  DeviceEvent? _lastEvent;
+
   DeviceManager._internal() {
     _channel.setMethodCallHandler((call) {
       switch (call.method) {
         case "device_added":
           {
             int deviceType = call.arguments;
-            if (deviceType == port) {
+            var ev = DeviceEvent(deviceType, EventType.add);
+            if (_lastEvent == null || _lastEvent != ev) {
+              _lastEvent = ev;
               notifyListeners();
             }
+
             break;
           }
         case "device_removed":
           {
             int deviceType = call.arguments;
-            if (deviceType == port) {
+            var ev = DeviceEvent(deviceType, EventType.remove);
+            if (_lastEvent == null || _lastEvent != ev) {
+              _lastEvent = ev;
               notifyListeners();
             }
             break;
@@ -47,4 +55,6 @@ class DeviceManager with ChangeNotifier {
     final int? count = await _channel.invokeMethod('get_devices_count');
     return count;
   }
+
+  DeviceEvent? get lastEvent => _lastEvent;
 }
