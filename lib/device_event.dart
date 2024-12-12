@@ -23,9 +23,12 @@ class DeviceEvent {
   @override
   int get hashCode => deviceType*100+eventType.index;
 
+  @override
+  String toString() {
+    return 'DeviceEvent{_deviceType: $_deviceType, _eventType: $_eventType}';
+  }
 
-
-  // @override
+// @override
   // int get hashCode {
   //   return eventType.index+ deviceType.hashCode;
   // }
