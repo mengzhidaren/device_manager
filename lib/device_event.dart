@@ -15,13 +15,19 @@ class DeviceEvent {
   int get deviceType => _deviceType;
 
   @override
-  bool operator ==(Object o) =>
-      o is DeviceEvent &&
-      o.eventType == eventType &&
-      o.deviceType == deviceType;
+  bool operator ==(Object other) =>
+      other is DeviceEvent &&
+      other.eventType == eventType &&
+      other.deviceType == deviceType;
 
   @override
-  int get hashCode {
-    return hashValues(eventType.hashCode, deviceType.hashCode);
-  }
+  int get hashCode => deviceType*100+eventType.index;
+
+
+
+  // @override
+  // int get hashCode {
+  //   return eventType.index+ deviceType.hashCode;
+  // }
+
 }
