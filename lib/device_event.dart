@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 enum EventType {
   add,
   remove,
@@ -21,16 +19,7 @@ class DeviceEvent {
       other.deviceType == deviceType;
 
   @override
-  int get hashCode => deviceType*100+eventType.index;
-
-  @override
-  String toString() {
-    return 'DeviceEvent{_deviceType: $_deviceType, _eventType: $_eventType}';
+  int get hashCode {
+    return Object.hash(eventType.hashCode, deviceType.hashCode);
   }
-
-// @override
-  // int get hashCode {
-  //   return eventType.index+ deviceType.hashCode;
-  // }
-
 }

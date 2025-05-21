@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
           scaffoldKey.currentState!
               .showSnackBar(const SnackBar(content: Text('Device removed!')));
         }
-
+         print('event=$event');
         //Refresh count
         initDevicesCount();
       }
